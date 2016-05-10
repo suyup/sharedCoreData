@@ -17,10 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var window: UIWindow?
-    let bgTask = BackgroundFetch.init(batches: Constants.batches)
+    let bgTask = BackgroundFetch.init()
+    var taskId: UIBackgroundTaskIdentifier = 0
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         return true
+    }
+    
+    func applicationDidBecomeActive(application: UIApplication) {
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -28,22 +32,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidEnterBackground(application: UIApplication) {
         let app = UIApplication.sharedApplication()
-        var taskId: UIBackgroundTaskIdentifier = 0
         let expirHandler = {
             self.bgTask.cancell()
-            app.endBackgroundTask(taskId)
+            app.endBackgroundTask(self.taskId)
         }
-        taskId = app.beginBackgroundTaskWithName(Constants.taskName, expirationHandler: expirHandler)
+        self.taskId = app.beginBackgroundTaskWithName(Constants.taskName, expirationHandler: expirHandler)
         self.bgTask.performSelector(#selector(self.bgTask.start), withObject: nil, afterDelay: 5)
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-    }
-
-    func applicationDidBecomeActive(application: UIApplication) {
+        self.bgTask.cancell()
+        UIApplication.sharedApplication().endBackgroundTask(self.taskId)
     }
 
     func applicationWillTerminate(application: UIApplication) {
+        CoreDataStack.instance.saveContext()
     }
 }
 

@@ -19,7 +19,7 @@ class TableViewController: UITableViewController {
         static let edit = "Edit"
     }
     
-    let coredataStack = CoreDataStack()
+    let coredataStack = CoreDataStack.instance
     
     lazy var dataSource: MessageDataSource = {
         return MessageDataSource.init(tableView: self.tableView, context: self.coredataStack.managedObjectContext)
@@ -32,27 +32,54 @@ class TableViewController: UITableViewController {
     
     @IBAction func createMessage(_: UIBarButtonItem) {
          self.presentTextField { title in
-            let message = NSEntityDescription.insertNewObjectForEntityForName(Constants.message, inManagedObjectContext: self.coredataStack.managedObjectContext) as? Message
-            message?.body = title?.isEmpty == false ? title : Constants.empty
-            message?.date = NSDate()
-            self.coredataStack.saveContext()
+            if let _ = Message.new(title) {
+                self.coredataStack.saveContext()
+            } else {
+                print("error creating a new message")
+            }
         }
     }
     
-    private func presentTextField(handler: ((String?) -> Void)?) {
-        if self.presentingViewController == nil {
-            let input = UIAlertController.init(title: Constants.message, message: nil, preferredStyle: .Alert)
-            input.addTextFieldWithConfigurationHandler { textField in
-                textField.placeholder = Constants.empty
-            }
-            let action = UIAlertAction.init(title: Constants.ok, style: .Default) { _ in
-                if let handler = handler {
-                    handler(input.textFields?.first?.text)
+    @IBAction func clearMessages(_: UIBarButtonItem) {
+        self.presentComfirmation {
+            if let messages = self.dataSource.frc.fetchedObjects as? [Message] {
+                for message in messages {
+                    self.dataSource.frc.managedObjectContext.deleteObject(message)
                 }
+                self.coredataStack.saveContext()
             }
-            input.addAction(action)
-            self.presentViewController(input, animated: false, completion: nil)
         }
+    }
+    
+    private func presentComfirmation(handler: (() -> Void)?) {
+        guard self.presentingViewController == nil else {
+            return
+        }
+        let confirm = UIAlertController.init(title: Constants.delete, message: nil, preferredStyle: .ActionSheet)
+        confirm.addAction(UIAlertAction.init(title: "OK", style: .Destructive, handler: { _ in
+            if let handler = handler {
+                handler()
+            }
+        }))
+        confirm.addAction(UIAlertAction.init(title: "Cancel", style: .Cancel, handler: nil))
+        self.presentViewController(confirm, animated: true, completion: nil)
+    }
+    
+    private func presentTextField(handler: ((String?) -> Void)?) {
+        guard self.presentingViewController == nil else {
+            return
+        }
+        let input = UIAlertController.init(title: Constants.message, message: nil, preferredStyle: .Alert)
+        input.addTextFieldWithConfigurationHandler { textField in
+            textField.placeholder = Constants.empty
+        }
+        input.addAction(UIAlertAction.init(title: Constants.ok, style: .Default) { _ in
+            if let handler = handler {
+                handler(input.textFields?.first?.text)
+            }
+        })
+        input.addAction(UIAlertAction.init(title: "Cancel", style: .Cancel, handler: nil))
+        self.presentViewController(input, animated: true, completion: nil)
     }
     
     // Mark: UITableView Delegate

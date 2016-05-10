@@ -11,5 +11,18 @@ import CoreData
 
 @objc(Message)
 class Message: NSManagedObject {
+    
+    struct Constants {
+        static let message = "Message"
+        static let empty = "Empty"
+    }
+    
+    class func new(title: String?) -> Message? {
+        let context = CoreDataStack.instance.managedObjectContext
+        let message = NSEntityDescription.insertNewObjectForEntityForName(Constants.message, inManagedObjectContext: context) as? Message
+        message?.body = title?.isEmpty == true ? Constants.empty : title
+        message?.date = NSDate()
+        return message
+    }
 
 }

@@ -46,9 +46,14 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Main" id="hd5-cw-MFj">
-                        <barButtonItem key="leftBarButtonItem" title="New" id="A96-oa-2aa" userLabel="Add">
+                        <barButtonItem key="leftBarButtonItem" title="Create" id="A96-oa-2aa">
                             <connections>
                                 <action selector="createMessage:" destination="wZZ-9A-OBH" id="Voz-m3-FUN"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Clear" id="15H-yu-OI7">
+                            <connections>
+                                <action selector="clearMessages:" destination="wZZ-9A-OBH" id="qXO-89-kE9"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

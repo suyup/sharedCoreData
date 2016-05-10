@@ -15,6 +15,7 @@ class BackgroundFetch: NSObject {
     }
     
     private let batches: UInt
+    private let size: UInt
     
     private let fetchQueue: NSOperationQueue = {
         let fetchQueue = NSOperationQueue()
@@ -24,28 +25,24 @@ class BackgroundFetch: NSObject {
         return fetchQueue
     }()
 
-    init(batches: UInt) {
+    init(batches: UInt = 1, size: UInt = 1) {
         self.batches = batches
+        self.size = size
         super.init()
-        self.addOperations(self.batches)
+        self.addOperations(self.batches, batchSize: self.size)
     }
     
-    private func addOperations(batches: UInt) {
-        var operations = [NSOperation]()
-        for index in 0...batches {
-            operations.append(getRandomTask(index))
+    private func addOperations(batches: UInt = 1, batchSize: UInt = 1) {
+        for index in 0..<batches {
+            let random = UInt(arc4random_uniform(10) + 1)
+            let task = Task(rawValue: UInt(random % 3))!.task(index, size: random)
+            self.fetchQueue.addOperation(task)
         }
-        self.fetchQueue.addOperations(operations, waitUntilFinished: false)
-    }
-    
-    private func getRandomTask(index: UInt) -> NSOperation {
-        let random = UInt(arc4random_uniform(10) + 1)
-        return Task(rawValue: UInt(index % 3))!.task(index, size: random)
     }
     
     func start() {
         if self.fetchQueue.operationCount == 0 {
-            self.addOperations(self.batches)
+            self.addOperations(self.batches, batchSize: self.size)
         }
         self.fetchQueue.suspended = false
     }
@@ -59,8 +56,3 @@ class BackgroundFetch: NSObject {
         self.fetchQueue.cancelAllOperations()
     }
 }
-
-
-
-
-

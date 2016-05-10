@@ -37,6 +37,10 @@ class MessageDataSource: NSObject, UITableViewDataSource, NSFetchedResultsContro
         super.init()
         
         self.frc.delegate = self
+        self.refresh()
+    }
+    
+    func refresh() {
         do {
             try self.frc.performFetch()
         } catch {
@@ -48,7 +52,6 @@ class MessageDataSource: NSObject, UITableViewDataSource, NSFetchedResultsContro
         if let message = self.frc.objectAtIndexPath(indexPath) as? Message {
             cell.textLabel?.text = message.body
             cell.detailTextLabel?.text = self.dateFormat.stringFromDate(message.date!)
-            self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Right)
         }
     }
     

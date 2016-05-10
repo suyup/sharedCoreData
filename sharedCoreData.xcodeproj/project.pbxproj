@@ -99,11 +99,11 @@
 		7524B9221CC91D3F006595F5 /* sharedCoreData */ = {
 			isa = PBXGroup;
 			children = (
-				7598D3C81CDB90D400E88020 /* MessageDataSource.swift */,
 				75960C271CC92C39005D6C1C /* CoreDataStack.swift */,
 				751BC8D71CDA501B00623BD5 /* Message.xcdatamodeld */,
 				7598D3E71CDBA1B000E88020 /* Message+CoreDataProperties.swift */,
 				7598D3E81CDBA1B000E88020 /* Message.swift */,
+				7598D3C81CDB90D400E88020 /* MessageDataSource.swift */,
 				7598C5111CE114E8008C3B73 /* BackgroundFetch.swift */,
 				7598C5141CE1361A008C3B73 /* Task.swift */,
 			);

@@ -15,6 +15,13 @@ class CoreDataStack {
         static let databaseName = "shared.sqlite"
     }
     
+    class var instance: CoreDataStack {
+        struct Singleton {
+            static let instance = CoreDataStack()
+        }
+        return Singleton.instance
+    }
+    
     lazy var url: NSURL? = {
         guard let appGroupShareDir = NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier(Constants.appGroupIdentifier) else {
             print("Error getting app group shared directory.")
